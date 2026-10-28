@@ -2,6 +2,8 @@
 
 FlixDB is a modern React application project built to showcase frontend pagination, dynamic sorting, and multi-criteria filtering.
 
+#### [Live Demo](https://flixdb-moviedatabase.vercel.app/):point_left: (hosted on [Vercel](https://vercel.com/))
+
 ## Tech Stack & Development
 
 - **Frontend:** [React](https://react.dev/) (Vite), CSS
