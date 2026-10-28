@@ -1,0 +1,522 @@
+.movie-hero {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  aspect-ratio: 1024 / 372;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
+}
+
+/* Horizontal sliding animation */
+
+.movie-hero__track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.movie-hero__slide {
+  position: relative;
+  isolation: isolate;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-background);
+}
+
+/* Artwork placeholder */
+
+.movie-hero__artwork {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  background-color: var(--color-background-secondary);
+  background-position: center 35%;
+  background-size: cover;
+}
+
+.movie-hero__asset-placeholder {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at 72% 36%,
+      var(--color-surface-tertiary),
+      transparent 36%
+    ),
+    linear-gradient(
+      110deg,
+      var(--color-background),
+      var(--color-background-secondary) 52%,
+      var(--color-surface-primary)
+    );
+}
+
+/* Cinematic overlay */
+
+.movie-hero__scrim {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      var(--color-background-scrim) 0%,
+      rgba(5, 9, 18, 0.94) 24%,
+      rgba(5, 9, 18, 0.76) 40%,
+      rgba(5, 9, 18, 0.18) 68%,
+      rgba(5, 9, 18, 0.06) 100%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(5, 9, 18, 0.72),
+      transparent 22%,
+      transparent 78%,
+      rgba(5, 9, 18, 0.12)
+    );
+}
+
+/* Content */
+
+.movie-hero__content {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 5.05%;
+  width: min(39%, 360px);
+  min-width: 0;
+  transform: translateY(-50%);
+}
+
+.movie-hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+  color: var(--color-text-accent);
+  font-size: var(--font-size-label-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-label);
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.movie-hero__eyebrow-slash {
+  width: 9px;
+  height: 1px;
+  flex-shrink: 0;
+  background: var(--color-primary);
+  transform: rotate(-55deg);
+}
+
+.movie-hero__title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-display);
+  font-size: clamp(28px, 4.8vw, var(--font-size-display-xl));
+  font-weight: var(--font-weight-black);
+  line-height: var(--line-height-display);
+  letter-spacing: var(--letter-spacing-display);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.movie-hero__subtitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+  padding-left: 5px;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-display);
+  font-size: clamp(15px, 2.05vw, 24px);
+  font-weight: var(--font-weight-extrabold);
+  line-height: 1.15;
+  letter-spacing: var(--letter-spacing-cinematic);
+  text-transform: uppercase;
+}
+
+.movie-hero__chapter {
+  color: var(--color-primary);
+  letter-spacing: 0;
+}
+
+/* Metadata */
+
+.movie-hero__metadata {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-metadata);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-metadata);
+}
+
+.movie-hero__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.movie-hero__star {
+  width: 12px;
+  height: 12px;
+  fill: var(--color-rating-star);
+}
+
+.movie-hero__separator {
+  width: 1px;
+  height: 10px;
+  background: var(--color-border-strong);
+}
+
+.movie-hero__genre-dot {
+  margin: 0 -5px;
+  color: var(--color-text-muted);
+}
+
+/* Description */
+
+.movie-hero__description {
+  max-width: 320px;
+  margin: 12px 0 16px;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5;
+}
+
+/* Buttons */
+
+.movie-hero__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.movie-hero__button {
+  display: inline-flex;
+  min-height: 37px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: var(--font-size-label-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-label);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.movie-hero__button-icon {
+  width: var(--icon-size-sm);
+  height: var(--icon-size-sm);
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+.movie-hero__plus-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.movie-hero__button--primary {
+  min-width: 144px;
+  color: #fff;
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-subtle);
+}
+
+.movie-hero__button--primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+.movie-hero__button--primary:active {
+  background: var(--color-primary-active);
+}
+
+.movie-hero__button--secondary {
+  color: var(--color-text-primary);
+  background: rgba(7, 11, 18, 0.48);
+  border-color: var(--color-border-strong);
+}
+
+.movie-hero__button--secondary:hover {
+  background: var(--color-surface-interactive);
+  border-color: var(--color-secondary);
+}
+
+.movie-hero__button--secondary.is-selected {
+  background: var(--color-primary-subtle);
+  border-color: var(--color-primary);
+}
+
+/* Keyboard focus */
+
+.movie-hero__button:focus-visible,
+.movie-hero__arrow:focus-visible,
+.movie-hero__dot:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Navigation arrows */
+
+.movie-hero__arrow {
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  display: grid;
+  width: 44px;
+  height: 46px;
+  place-items: center;
+  padding: 0;
+  border: none;
+  color: var(--color-text-primary);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.movie-hero__arrow:hover {
+  color: var(--color-primary-soft);
+  background: rgba(13, 20, 32, 0.7);
+}
+
+.movie-hero__arrow:active {
+  background: var(--color-surface-interactive);
+}
+
+.movie-hero__arrow svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.movie-hero__arrow--previous {
+  left: 2px;
+}
+
+.movie-hero__arrow--next {
+  right: 2px;
+}
+
+/* Pagination */
+
+.movie-hero__pagination {
+  position: absolute;
+  z-index: 2;
+  bottom: 16px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transform: translateX(-50%);
+}
+
+.movie-hero__dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-secondary);
+  opacity: 0.75;
+  cursor: pointer;
+  transition:
+    width var(--transition-fast),
+    background-color var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.movie-hero__dot:hover {
+  opacity: 1;
+  background: var(--color-text-primary);
+}
+
+.movie-hero__dot.is-active {
+  width: 10px;
+  background: var(--color-primary);
+  opacity: 1;
+}
+
+.movie-hero__button:disabled,
+.movie-hero__arrow:disabled,
+.movie-hero__dot:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+/* Smaller screens: remain a banner, never fill the viewport */
+
+@media (max-width: 700px) {
+  .movie-hero {
+    aspect-ratio: 4 / 5;
+    min-height: 0;
+  }
+
+  .movie-hero__artwork {
+    background-position: 58% center;
+  }
+
+  .movie-hero__scrim {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(5, 9, 18, 0.94),
+        rgba(5, 9, 18, 0.72) 65%,
+        rgba(5, 9, 18, 0.3)
+      ),
+      linear-gradient(
+        0deg,
+        rgba(5, 9, 18, 0.9),
+        transparent 75%
+      );
+  }
+
+  .movie-hero__content {
+    top: 50%;
+    bottom: auto;
+    left: 5%;
+    width: 68%;
+    min-width: 0;
+    transform: translateY(-50%);
+  }
+
+  .movie-hero__eyebrow {
+    margin-bottom: 5px;
+    font-size: 9px;
+  }
+
+  .movie-hero__title {
+    font-size: clamp(22px, 5.5vw, 36px);
+  }
+
+  .movie-hero__subtitle {
+    font-size: clamp(12px, 2.8vw, 18px);
+  }
+
+  .movie-hero__metadata {
+    gap: 7px;
+    margin-top: 9px;
+  }
+
+  .movie-hero__description {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 8px 0 12px;
+    font-size: 11px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .movie-hero__actions {
+    gap: 8px;
+  }
+
+  .movie-hero__button {
+    min-height: 32px;
+    gap: 7px;
+    padding: 7px 10px;
+    font-size: 10px;
+  }
+
+  .movie-hero__button--primary {
+    min-width: 0;
+  }
+
+  .movie-hero__button-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .movie-hero__arrow {
+    width: 32px;
+    height: 34px;
+  }
+
+  .movie-hero__arrow svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .movie-hero__pagination {
+    bottom: 13px;
+    gap: 7px;
+  }
+}
+
+@media (max-width: 400px) {
+  .movie-hero__content {
+    width: 76%;
+  }
+
+  .movie-hero__metadata {
+    gap: 5px;
+  }
+
+  .movie-hero__description {
+    -webkit-line-clamp: 2;
+  }
+
+  .movie-hero__actions {
+    gap: 6px;
+  }
+
+  .movie-hero__button {
+    padding: 7px 8px;
+  }
+}
+
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  .movie-hero__track {
+    transition: none;
+  }
+
+  .movie-hero *,
+  .movie-hero *::before,
+  .movie-hero *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}
