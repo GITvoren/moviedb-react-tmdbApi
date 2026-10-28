@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../assets/css/moviebrowser.css";
+import MovieDetailsModal from "./MovieDetailsModal";
 
 // Fallback genre mappings in case TMDB genre fetch is pending
 const STATIC_GENRE_MAP = {
@@ -34,13 +35,7 @@ const sortOptions = [
 
 function MoreIcon() {
   return (
-    <svg
-      viewBox="0 0 16 16"
-      width="16"
-      height="16"
-      fill="currentColor"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor" aria-hidden="true">
       <circle cx="8" cy="3" r="1.25" />
       <circle cx="8" cy="8" r="1.25" />
       <circle cx="8" cy="13" r="1.25" />
@@ -56,57 +51,39 @@ function ChevronIcon({ direction = "down" }) {
   };
 
   return (
-    <svg
-      viewBox="0 0 16 16"
-      width="16"
-      height="16"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d={paths[direction]}
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true">
+      <path d={paths[direction]} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
 function StarIcon() {
   return (
-    <svg
-      className="movie-card__star"
-      viewBox="0 0 16 16"
-      width="13"
-      height="13"
-      aria-hidden="true"
-    >
-      <path
-        fill="currentColor"
-        d="m8 1.4 2 4.05 4.47.65-3.24 3.16.77 4.46L8 11.61l-4 2.11.77-4.46L1.53 6.1 6 5.45 8 1.4Z"
-      />
+    <svg className="movie-card__star" viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
+      <path fill="currentColor" d="m8 1.4 2 4.05 4.47.65-3.24 3.16.77 4.46L8 11.61l-4 2.11.77-4.46L1.53 6.1 6 5.45 8 1.4Z" />
     </svg>
   );
 }
 
-function MovieCard({
-  movie,
-  onAction,
-  openMenu,
-  setOpenMenu,
-  menuRef,
-}) {
+function MovieCard({ movie, onAction, openMenu, setOpenMenu, menuRef }) {
   const isMenuOpen = openMenu === movie.id;
 
   return (
     <article className="movie-card">
       <div
         className="movie-card__poster"
-        role="img"
-        aria-label={`Poster artwork for ${movie.title}`}
+        role="button"
+        tabIndex={0}
+        aria-label={`View details for ${movie.title}`}
         data-poster-id={movie.id}
+        onClick={() => onAction("details", movie)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onAction("details", movie);
+          }
+        }}
+        style={{ cursor: "pointer" }}
       >
         {movie.poster ? (
           <img
@@ -120,10 +97,7 @@ function MovieCard({
           <div className="movie-card__poster-slot" />
         )}
 
-        <div
-          className="movie-card__rating"
-          aria-label={`Rating ${movie.rating} out of 10`}
-        >
+        <div className="movie-card__rating" aria-label={`Rating ${movie.rating} out of 10`}>
           <StarIcon />
           <span>{movie.rating.toFixed(1)}</span>
         </div>
@@ -131,24 +105,25 @@ function MovieCard({
 
       <div className="movie-card__details">
         <div className="movie-card__title-row">
-          <h3 className="movie-card__title" title={movie.title}>
+          <h3
+            className="movie-card__title"
+            title={movie.title}
+            onClick={() => onAction("details", movie)}
+            style={{ cursor: "pointer" }}
+          >
             {movie.title}
           </h3>
 
-          <div
-            className="movie-card__menu-wrap"
-            ref={isMenuOpen ? menuRef : null}
-          >
+          <div className="movie-card__menu-wrap" ref={isMenuOpen ? menuRef : null}>
             <button
               className="movie-card__more"
               type="button"
               aria-label={`More options for ${movie.title}`}
               aria-expanded={isMenuOpen}
               aria-haspopup="menu"
-              onClick={() => {
-                setOpenMenu((current) =>
-                  current === movie.id ? null : movie.id
-                );
+              onClick={(e) => {
+                e.stopPropagation();
+                setOpenMenu((current) => (current === movie.id ? null : movie.id));
               }}
             >
               <MoreIcon />
@@ -159,7 +134,8 @@ function MovieCard({
                 <button
                   type="button"
                   role="menuitem"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     onAction("details", movie);
                     setOpenMenu(null);
                   }}
@@ -170,7 +146,8 @@ function MovieCard({
                 <button
                   type="button"
                   role="menuitem"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     onAction("watchlist", movie);
                     setOpenMenu(null);
                   }}
@@ -184,9 +161,7 @@ function MovieCard({
 
         <p className="movie-card__metadata">
           <span>{movie.year}</span>
-          <span className="movie-card__separator" aria-hidden="true">
-            ·
-          </span>
+          <span className="movie-card__separator" aria-hidden="true">·</span>
           <span>{movie.genres.join(" · ")}</span>
         </p>
       </div>
@@ -194,11 +169,11 @@ function MovieCard({
   );
 }
 
-export default function MovieBrowser({ onMovieAction }) {
+export default function MovieBrowser({ searchQuery, onMovieAction }) {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tmdbGenres, setTmdbGenres] = useState([]);
-  const [selectedGenreId, setSelectedGenreId] = useState(null); // null = "All"
+  const [selectedGenreId, setSelectedGenreId] = useState(null);
   const [selectedGenreName, setSelectedGenreName] = useState("All");
   const [sortBy, setSortBy] = useState("trending");
   const [showMoreGenres, setShowMoreGenres] = useState(false);
@@ -206,6 +181,7 @@ export default function MovieBrowser({ onMovieAction }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [watchlist, setWatchlist] = useState([]);
+  const [selectedMovie, setSelectedMovie] = useState(null);
 
   const genreDropdownRef = useRef(null);
   const movieMenuRef = useRef(null);
@@ -223,17 +199,26 @@ export default function MovieBrowser({ onMovieAction }) {
       .catch((err) => console.error("Failed to fetch genres:", err));
   }, []);
 
-  // 2. Fetch movies based on active genre filter, sort option, and page number
+  // 2. Unified Fetch Hook (Handles Search OR Discover based on searchQuery)
   useEffect(() => {
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
     setLoading(true);
 
-    const currentSort = sortOptions.find((o) => o.value === sortBy)?.apiSort || "popularity.desc";
-    
-    let url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&sort_by=${currentSort}&page=${currentPage}&vote_count.gte=100`;
+    let url = "";
 
-    if (selectedGenreId) {
-      url += `&with_genres=${selectedGenreId}`;
+    if (searchQuery && searchQuery.trim() !== "") {
+      // TMDB Search Endpoint
+      url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(
+        searchQuery.trim()
+      )}&page=${currentPage}`;
+    } else {
+      // TMDB Discover Endpoint (Sorting & Filtering)
+      const currentSort = sortOptions.find((o) => o.value === sortBy)?.apiSort || "popularity.desc";
+      url = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&sort_by=${currentSort}&page=${currentPage}&vote_count.gte=100`;
+
+      if (selectedGenreId) {
+        url += `&with_genres=${selectedGenreId}`;
+      }
     }
 
     fetch(url)
@@ -255,14 +240,11 @@ export default function MovieBrowser({ onMovieAction }) {
               year: year,
               genres: mappedGenres,
               rating: m.vote_average || 0,
-              poster: m.poster_path
-                ? `https://image.tmdb.org/t/p/w500${m.poster_path}`
-                : null,
+              poster: m.poster_path ? `https://image.tmdb.org/t/p/w500${m.poster_path}` : null,
             };
           });
 
           setMovies(formatted);
-          // TMDB caps paginated browse responses at 500 pages max
           setTotalPages(Math.min(data.total_pages || 1, 500));
         }
         setLoading(false);
@@ -271,22 +253,16 @@ export default function MovieBrowser({ onMovieAction }) {
         console.error("Failed to fetch movies:", err);
         setLoading(false);
       });
-  }, [selectedGenreId, sortBy, currentPage, tmdbGenres]);
+  }, [searchQuery, selectedGenreId, sortBy, currentPage, tmdbGenres]);
 
-  // Event handlers for closing menus on outside pointerdown / Esc key
+  // Outside click / Escape listeners
   useEffect(() => {
     function handleOutsideClick(event) {
       const target = event.target;
-      if (
-        genreDropdownRef.current &&
-        !genreDropdownRef.current.contains(target)
-      ) {
+      if (genreDropdownRef.current && !genreDropdownRef.current.contains(target)) {
         setShowMoreGenres(false);
       }
-      if (
-        movieMenuRef.current &&
-        !movieMenuRef.current.contains(target)
-      ) {
+      if (movieMenuRef.current && !movieMenuRef.current.contains(target)) {
         setOpenMenu(null);
       }
     }
@@ -307,7 +283,6 @@ export default function MovieBrowser({ onMovieAction }) {
     return () => document.removeEventListener("keydown", handleEscape);
   }, []);
 
-  // Split dynamic genres into primary chips (top 4) and dropdown menu (the rest)
   const primaryGenres = tmdbGenres.slice(0, 4);
   const extraGenres = tmdbGenres.slice(4);
 
@@ -320,15 +295,18 @@ export default function MovieBrowser({ onMovieAction }) {
   }
 
   function handleMovieAction(action, movie) {
-    if (action === "watchlist") {
-      setWatchlist((current) =>
-        current.includes(movie.id) ? current : [...current, movie.id]
-      );
+    if (action === "details") {
+      setSelectedMovie(movie);
+      return;
     }
+
+    if (action === "watchlist") {
+      setWatchlist((current) => (current.includes(movie.id) ? current : [...current, movie.id]));
+    }
+
     onMovieAction?.(action, movie);
   }
 
-  // Calculate visible page range for pagination controls
   const getPageNumbers = () => {
     const pages = [];
     const maxVisible = 5;
@@ -351,14 +329,9 @@ export default function MovieBrowser({ onMovieAction }) {
         <div className="movie-browser__filters">
           <span className="movie-browser__filter-label">Genres</span>
 
-          <nav
-            className="movie-browser__genre-list"
-            aria-label="Filter movies by genre"
-          >
+          <nav className="movie-browser__genre-list" aria-label="Filter movies by genre">
             <button
-              className={`movie-browser__chip ${
-                selectedGenreName === "All" ? "movie-browser__chip--active" : ""
-              }`}
+              className={`movie-browser__chip ${selectedGenreName === "All" ? "movie-browser__chip--active" : ""}`}
               type="button"
               aria-pressed={selectedGenreName === "All"}
               onClick={() => selectGenre(null, "All")}
@@ -369,9 +342,7 @@ export default function MovieBrowser({ onMovieAction }) {
             {primaryGenres.map((g) => (
               <button
                 key={g.id}
-                className={`movie-browser__chip ${
-                  selectedGenreId === g.id ? "movie-browser__chip--active" : ""
-                }`}
+                className={`movie-browser__chip ${selectedGenreId === g.id ? "movie-browser__chip--active" : ""}`}
                 type="button"
                 aria-pressed={selectedGenreId === g.id}
                 onClick={() => selectGenre(g.id, g.name)}
@@ -380,15 +351,10 @@ export default function MovieBrowser({ onMovieAction }) {
               </button>
             ))}
 
-            <div
-              className="movie-browser__extra-wrap"
-              ref={genreDropdownRef}
-            >
+            <div className="movie-browser__extra-wrap" ref={genreDropdownRef}>
               <button
                 className={`movie-browser__chip movie-browser__chip--more ${
-                  extraGenres.some((g) => g.id === selectedGenreId)
-                    ? "movie-browser__chip--active"
-                    : ""
+                  extraGenres.some((g) => g.id === selectedGenreId) ? "movie-browser__chip--active" : ""
                 }`}
                 type="button"
                 aria-label="More genres"
@@ -403,11 +369,7 @@ export default function MovieBrowser({ onMovieAction }) {
               </button>
 
               {showMoreGenres && (
-                <div
-                  className="movie-browser__genre-menu"
-                  role="menu"
-                  aria-label="Additional genres"
-                >
+                <div className="movie-browser__genre-menu" role="menu" aria-label="Additional genres">
                   {extraGenres.map((g) => (
                     <button
                       key={g.id}
@@ -430,10 +392,7 @@ export default function MovieBrowser({ onMovieAction }) {
           <label htmlFor="movie-sort">Sort by</label>
 
           <div className="movie-browser__select-wrap">
-            <span
-              className="movie-browser__sort-icon"
-              aria-hidden="true"
-            >
+            <span className="movie-browser__sort-icon" aria-hidden="true">
               <svg viewBox="0 0 20 20" width="15" height="15">
                 <path
                   fill="currentColor"
@@ -485,7 +444,7 @@ export default function MovieBrowser({ onMovieAction }) {
 
       {!loading && movies.length === 0 && (
         <div className="movie-browser__empty">
-          <p>No movies found for this genre.</p>
+          <p>No movies found.</p>
           <button type="button" onClick={() => selectGenre(null, "All")}>
             Clear filters
           </button>
@@ -493,18 +452,13 @@ export default function MovieBrowser({ onMovieAction }) {
       )}
 
       {!loading && totalPages > 1 && (
-        <nav
-          className="movie-browser__pagination"
-          aria-label="Movie pages"
-        >
+        <nav className="movie-browser__pagination" aria-label="Movie pages">
           <button
             className="movie-browser__page movie-browser__page--arrow"
             type="button"
             aria-label="Previous page"
             disabled={currentPage === 1}
-            onClick={() =>
-              setCurrentPage((page) => Math.max(1, page - 1))
-            }
+            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
           >
             <ChevronIcon direction="left" />
           </button>
@@ -512,9 +466,7 @@ export default function MovieBrowser({ onMovieAction }) {
           {getPageNumbers().map((page) => (
             <button
               key={page}
-              className={`movie-browser__page ${
-                currentPage === page ? "movie-browser__page--active" : ""
-              }`}
+              className={`movie-browser__page ${currentPage === page ? "movie-browser__page--active" : ""}`}
               type="button"
               aria-label={`Page ${page}`}
               aria-current={currentPage === page ? "page" : undefined}
@@ -529,22 +481,22 @@ export default function MovieBrowser({ onMovieAction }) {
             type="button"
             aria-label="Next page"
             disabled={currentPage === totalPages}
-            onClick={() =>
-              setCurrentPage((page) => Math.min(totalPages, page + 1))
-            }
+            onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
           >
             <ChevronIcon direction="right" />
           </button>
         </nav>
       )}
 
-      <span className="movie-browser__sr-only" aria-live="polite">
-        {watchlist.length > 0
-          ? `${watchlist.length} ${
-              watchlist.length === 1 ? "movie" : "movies"
-            } in watchlist`
-          : ""}
-      </span>
+      <MovieDetailsModal
+        movie={selectedMovie}
+        isOpen={Boolean(selectedMovie)}
+        onClose={() => setSelectedMovie(null)}
+        onAddToWatchlist={(movie) => {
+          setWatchlist((current) => (current.includes(movie.id) ? current : [...current, movie.id]));
+          setSelectedMovie(null);
+        }}
+      />
     </section>
   );
 }

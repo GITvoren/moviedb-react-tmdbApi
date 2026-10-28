@@ -1,14 +1,16 @@
-import Navbar from './components/Navbar.jsx';
-import Home from './pages/Home.jsx';
+import React, { useState } from "react";
+import Navbar from "./components/Navbar.jsx";
+import Footer from "./components/Footer.jsx";
+import Home from "./pages/Home.jsx";
 
-function App() {
+export default function App() {
+  const [searchQuery, setSearchQuery] = useState("");
+
   return (
     <div className="app">
-      <Navbar />
-      <Home />
-      
+      <Navbar onSearch={(query) => setSearchQuery(query)} />
+      <Home searchQuery={searchQuery} />
+      <Footer />
     </div>
   );
 }
-
-export default App;

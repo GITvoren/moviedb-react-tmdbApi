@@ -21,26 +21,9 @@ const CATEGORIES = [
 
 function SearchIcon() {
   return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 20 20"
-      fill="none"
-      aria-hidden="true"
-    >
-      <circle
-        cx="8.8"
-        cy="8.8"
-        r="5.7"
-        stroke="currentColor"
-        strokeWidth="1.7"
-      />
-      <path
-        d="m13 13 4 4"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
+    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <circle cx="8.8" cy="8.8" r="5.7" stroke="currentColor" strokeWidth="1.7" />
+      <path d="m13 13 4 4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
 }
@@ -48,21 +31,11 @@ function SearchIcon() {
 function MenuIcon({ open }) {
   return open ? (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="m6 6 12 12M18 6 6 18"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+      <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   ) : (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M4 7h16M4 12h16M4 17h16"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
+      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -77,18 +50,12 @@ function ChevronIcon({ open }) {
       fill="none"
       aria-hidden="true"
     >
-      <path
-        d="m6 9 6 6 6-6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-export default function FlixDBHeader() {
+export default function FlixDBHeader({ onSearch, onCategorySelect, onNavigate }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchHovered, setIsSearchHovered] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -101,25 +68,15 @@ export default function FlixDBHeader() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 900px)");
-
-    const updateScreenSize = () => {
-      setIsTabletOrMobile(mediaQuery.matches);
-    };
-
+    const updateScreenSize = () => setIsTabletOrMobile(mediaQuery.matches);
     updateScreenSize();
     mediaQuery.addEventListener("change", updateScreenSize);
-
-    return () => {
-      mediaQuery.removeEventListener("change", updateScreenSize);
-    };
+    return () => mediaQuery.removeEventListener("change", updateScreenSize);
   }, []);
 
   useEffect(() => {
     function handleOutsideClick(event) {
-      if (
-        headerRef.current &&
-        !headerRef.current.contains(event.target)
-      ) {
+      if (headerRef.current && !headerRef.current.contains(event.target)) {
         setCategoriesOpen(false);
       }
     }
@@ -142,40 +99,29 @@ export default function FlixDBHeader() {
     };
   }, []);
 
-  const isSearchExpanded =
-    isSearchHovered || isSearchFocused || isTabletOrMobile;
+  const isSearchExpanded = isSearchHovered || isSearchFocused || isTabletOrMobile;
 
-  function handleSearch(event) {
+  function handleSearchSubmit(event) {
     event.preventDefault();
-
     const query = searchQuery.trim();
-
-    if (!query) {
-      searchInputRef.current?.focus();
-      return;
-    }
-
-    // Connect your existing search logic here.
-    console.log("Search:", query);
+    onSearch?.(query);
+    setMobileMenuOpen(false);
   }
 
   function handleClearSearch() {
     setSearchQuery("");
+    onSearch?.("");
     searchInputRef.current?.focus();
   }
 
   function navigateTo(page) {
-    // Connect this to your router or existing page navigation.
-    console.log("Navigate to:", page);
-
+    onNavigate?.(page);
     setMobileMenuOpen(false);
     setCategoriesOpen(false);
   }
 
-  function handleCategorySelect(category) {
-    // Connect this to your existing category filtering logic.
-    console.log("Selected category:", category);
-
+  function handleCategoryClick(category) {
+    onCategorySelect?.(category);
     setCategoriesOpen(false);
     setMobileMenuOpen(false);
   }
@@ -183,100 +129,71 @@ export default function FlixDBHeader() {
   return (
     <header className="flix-header" ref={headerRef}>
       <div className="flix-header__inner">
-       
-       <div>
+        <div>
           <a
-          className="flix-header__brand"
-          href="/"
-          aria-label="FLIXDB home"
-          onClick={(event) => {
-            event.preventDefault();
-            navigateTo("home");
-          }}
-        >
-          <img
-            className="flix-header__logo"
-            src={BRAND_LOGO}
-            alt="FLIXDB"
-          />
-        </a>
-
-        {/* Desktop / tablet navigation */}
-        <nav
-          className="flix-header__desktop-nav"
-          aria-label="Main navigation"
-        >
-          <button
-            type="button"
-            className="flix-header__nav-link"
-            onClick={() => navigateTo("movies")}
+            className="flix-header__brand"
+            href="/"
+            aria-label="FLIXDB home"
+            onClick={(event) => {
+              event.preventDefault();
+              navigateTo("home");
+            }}
           >
-            Movies
-          </button>
+            <img className="flix-header__logo" src={BRAND_LOGO} alt="FLIXDB" />
+          </a>
 
-          <button
-            type="button"
-            className="flix-header__nav-link"
-            onClick={() => navigateTo("tv-shows")}
-          >
-            TV Shows
-          </button>
-
-          <div className="flix-header__categories">
-            <button
-              type="button"
-              className={`flix-header__nav-link ${
-                categoriesOpen ? "is-active" : ""
-              }`}
-              aria-expanded={categoriesOpen}
-              onClick={() => setCategoriesOpen((open) => !open)}
-            >
-              Categories
-              <ChevronIcon open={categoriesOpen} />
+          <nav className="flix-header__desktop-nav" aria-label="Main navigation">
+            <button type="button" className="flix-header__nav-link" onClick={() => navigateTo("movies")}>
+              Movies
             </button>
 
-            {categoriesOpen && (
-              <div className="flix-header__category-menu">
-                <p className="flix-header__dropdown-title">
-                  Browse by genre
-                </p>
+            <button type="button" className="flix-header__nav-link" onClick={() => navigateTo("tv-shows")}>
+              TV Shows
+            </button>
 
-                <div className="flix-header__category-grid">
-                  {CATEGORIES.map((category) => (
-                    <button
-                      type="button"
-                      key={category}
-                      className="flix-header__category-item"
-                      onClick={() => handleCategorySelect(category)}
-                    >
-                      {category}
-                    </button>
-                  ))}
+            <div className="flix-header__categories">
+              <button
+                type="button"
+                className={`flix-header__nav-link ${categoriesOpen ? "is-active" : ""}`}
+                aria-expanded={categoriesOpen}
+                onClick={() => setCategoriesOpen((open) => !open)}
+              >
+                Categories
+                <ChevronIcon open={categoriesOpen} />
+              </button>
+
+              {categoriesOpen && (
+                <div className="flix-header__category-menu">
+                  <p className="flix-header__dropdown-title">Browse by genre</p>
+                  <div className="flix-header__category-grid">
+                    {CATEGORIES.map((category) => (
+                      <button
+                        type="button"
+                        key={category}
+                        className="flix-header__category-item"
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        {category}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </nav>
+              )}
+            </div>
+          </nav>
+        </div>
 
-       </div>
-        
         <div className="flix-header__actions">
           <form
             className={`flix-header__search ${
-              isSearchExpanded
-                ? "flix-header__search--expanded"
-                : "flix-header__search--collapsed"
+              isSearchExpanded ? "flix-header__search--expanded" : "flix-header__search--collapsed"
             }`}
             role="search"
-            onSubmit={handleSearch}
+            onSubmit={handleSearchSubmit}
             onMouseEnter={() => setIsSearchHovered(true)}
             onMouseLeave={() => setIsSearchHovered(false)}
           >
-            <button
-              className="flix-header__search-submit"
-              type="submit"
-              aria-label="Search"
-            >
+            <button className="flix-header__search-submit" type="submit" aria-label="Search">
               <SearchIcon />
             </button>
 
@@ -284,14 +201,14 @@ export default function FlixDBHeader() {
               ref={searchInputRef}
               className="flix-header__search-input"
               type="search"
-              placeholder={
-                isSearchExpanded
-                  ? "Search movies, TV shows, actors..."
-                  : ""
-              }
+              placeholder={isSearchExpanded ? "Search movies, TV shows, actors..." : ""}
               aria-label="Search movies, TV shows, and actors"
               value={searchQuery}
-              onChange={(event) => setSearchQuery(event.target.value)}
+              onChange={(event) => {
+                const value = event.target.value;
+                setSearchQuery(value);
+                onSearch?.(value);
+              }}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
               autoComplete="off"
@@ -299,13 +216,11 @@ export default function FlixDBHeader() {
 
             <button
               className={`flix-header__clear ${
-                isSearchFocused && searchQuery
-                  ? "flix-header__clear--visible"
-                  : ""
+                searchQuery ? "flix-header__clear--visible" : ""
               }`}
               type="button"
               aria-label="Clear search"
-              tabIndex={isSearchFocused && searchQuery ? 0 : -1}
+              onMouseDown={(e) => e.preventDefault()}
               onClick={handleClearSearch}
             >
               &times;
@@ -320,38 +235,16 @@ export default function FlixDBHeader() {
             aria-label="Open profile"
             onClick={() => console.log("Open profile")}
           >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
-            >
-              <circle
-                cx="12"
-                cy="8"
-                r="3.5"
-                stroke="currentColor"
-                strokeWidth="1.6"
-              />
-              <path
-                d="M5 20c.7-3.5 3.2-5.3 7-5.3s6.3 1.8 7 5.3"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M5 20c.7-3.5 3.2-5.3 7-5.3s6.3 1.8 7 5.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
             </svg>
           </button>
 
-          <button
-            type="button"
-            className="flix-header__login"
-            onClick={() => console.log("Open login")}
-          >
+          <button type="button" className="flix-header__login" onClick={() => console.log("Open login")}>
             Login / Register
           </button>
 
-          {/* Mobile menu button */}
           <button
             type="button"
             className="flix-header__menu-toggle"
@@ -368,12 +261,9 @@ export default function FlixDBHeader() {
         </div>
       </div>
 
-      {/* Mobile navigation */}
       <div
         id="flix-mobile-navigation"
-        className={`flix-header__mobile-panel ${
-          mobileMenuOpen ? "is-open" : ""
-        }`}
+        className={`flix-header__mobile-panel ${mobileMenuOpen ? "is-open" : ""}`}
         aria-hidden={!mobileMenuOpen}
       >
         <nav className="flix-header__mobile-nav" aria-label="Mobile navigation">
@@ -414,7 +304,7 @@ export default function FlixDBHeader() {
                   key={category}
                   className="flix-header__mobile-category"
                   tabIndex={mobileMenuOpen ? 0 : -1}
-                  onClick={() => handleCategorySelect(category)}
+                  onClick={() => handleCategoryClick(category)}
                 >
                   {category}
                 </button>

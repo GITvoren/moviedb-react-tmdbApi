@@ -1,15 +1,12 @@
+import React from "react";
 import Hero from '../components/Hero.jsx';
 import MovieBrowser from '../components/MovieBrowser.jsx';
 
-
-function Home(){
-     return(
-          <section id="home">
-               <Hero />
-               <MovieBrowser />
-          </section>
-     );
+export default function Home({ searchQuery }) {
+  return (
+    <section id="home">
+      <Hero />
+      <MovieBrowser searchQuery={searchQuery} />
+    </section>
+  );
 }
-
-
-export default Home;

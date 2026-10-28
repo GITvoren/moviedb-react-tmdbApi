@@ -1,6 +1,6 @@
-# FLIXDB - Movie Database Web Application
+# FlixDB - Movie Database Web Application
 
-FLIXDB is a modern React application project built to showcase frontend pagination, dynamic sorting, and multi-criteria filtering.
+FlixDB is a modern React application project built to showcase frontend pagination, dynamic sorting, and multi-criteria filtering.
 
 ## Tech Stack & Development
 
@@ -21,5 +21,5 @@ The primary objective of this project is to master and showcase advanced data-ha
 - **Interactive Movie Catalog:** A responsive grid of movies equipped with easy-to-use page navigation so users can browse thousands of titles seamlessly.
 - **Smart Filtering & Sorting:** Instantly sort movies by popularity, ratings, or release dates, and filter titles by specific genres.
 - **Instant Search:** Live keyword search that lets users find movies on the fly with fully supported paginated search results.
-- **Rich Detail Pages:** Deep-linked movie pages (`/movie/:id`) that showcase full poster art, backdrop visuals, ratings, and plot synopses.
+- **Rich Detail Pages:** An interactive, full-screen overlay that showcases high-res poster art, backdrop visuals, ratings, cast highlights, and plot synopses without breaking your browse scroll position.
 - **Sleek Streaming UI:** A clean, modern, dark-mode design built for optimal viewing across mobile, tablet, and desktop screens.
